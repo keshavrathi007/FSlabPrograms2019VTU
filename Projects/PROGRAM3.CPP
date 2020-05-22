@@ -1,0 +1,195 @@
+#include<iostream.h>
+#include<stdio.h>
+#include<fstream.h>
+#include<stdlib.h>
+#include<string.h>
+# include<conio.h>
+class Person
+{
+char usn[30];
+char name[30];
+char address[30];
+char branch[30];
+char college[30];
+char buffer[100];
+public:
+void input();
+void output();
+void search();
+void modify();
+void pack();
+void unpack();
+void Write();
+};
+void Person :: input()
+{
+cout<<"Enter Usn"<<endl;
+cin>>usn;
+cout<<"Enter Name"<<endl;
+cin>>name;
+cout<<"Enter Address"<<endl;
+cin>>address;
+cout<<"Enter Branch"<<endl;
+cin>>branch;
+cout<<"Enter College"<<endl;
+cin>>college;
+}
+void Person :: output()
+{
+istream& flush();
+cout<<"Usn :";
+puts(usn);
+cout<<"Name :";
+puts(name);
+ cout<<"Address :";
+puts(address);
+ cout<<"Branch :";
+puts(branch);
+ cout<<"College :";
+puts(college);
+}
+void Person::pack()
+{
+strcpy(buffer,usn); strcat(buffer,"|");
+strcat(buffer,name); strcat(buffer,"|");
+strcat(buffer,address); strcat(buffer,"|");
+strcat(buffer,branch); strcat(buffer,"|");
+strcat(buffer,college); strcat(buffer,"|");
+strcat(buffer,"#");
+}
+void Person::unpack()
+{
+char *ptr = buffer;
+while(*ptr!='#')
+{
+if(*ptr == '|')
+*ptr = '\0';
+ptr++;
+}
+ptr = buffer;
+strcpy(usn,ptr);
+ptr = ptr +strlen(ptr)+1;
+strcpy(name,ptr);
+ptr = ptr +strlen(ptr)+1;
+strcpy(address,ptr);
+ptr = ptr +strlen(ptr)+1;
+strcpy(branch,ptr);
+ptr = ptr+strlen(ptr)+1;
+strcpy(college,ptr);
+}
+void Person:: Write()
+{
+fstream os("p.txt",ios::out|ios::app);
+os.write(buffer,strlen(buffer));
+os<<endl;
+os.close();
+}
+void Person :: search()
+{
+int found = 0;
+char key[30];
+fstream is("p.txt",ios::in);
+ cout<<"Enter The Usn Of The Record To Be Searched "<<endl;
+cin>>key;
+while(!is.eof() && !found)
+{
+is.getline(buffer,'#');
+unpack();
+if(strcmp(usn,key) == 0)
+{
+cout<<"Record Found!!! "<<endl;
+output();
+found = 1;
+}
+}
+if(!found)
+cout<<"Record Not Found!!!"<<endl;
+is.close();
+}
+void Person :: modify()
+{
+char key[30];
+char del='$';
+cout<<"Enter The USN Of The Record To Be Modified"<<endl;
+cin>>key;
+int found = 0;
+fstream is;
+is.open("p.txt",ios::in|ios::out);
+while(!is.eof() && !found)
+{
+ is.getline(buffer,'#');
+int len=strlen(buffer);
+unpack();
+if(strcmp(usn,key) == 0)
+{
+int pos=is.tellg();
+pos=pos-len;
+is.seekg(pos,ios::beg);
+is<<del;
+cout<<"ENTER 1:USN\n2:NAME\n3:ADDRESS \n4:BRANCH \n5:COLLEGE\n";
+cout<<"Enter What to modify ? ";
+int ch;
+cin>>ch;
+switch(ch)
+{
+case 1:
+cout<<"USN :";
+cin>>usn;
+break;
+case 2 :
+cout<<"\n NAME :";
+cin>>name;
+break;
+case 3:
+cout<<"\n BRANCH :";
+cin>>branch;
+break;
+case 4:
+cout<<"\n ADDRESS :";
+cin>>address;
+break;
+case 5:
+cout<<"\n COLLEGE :";
+cin>>college;
+break;
+default :
+cout<<"wrong choice !!!";
+break;
+}
+found = 1;
+pack();
+Write();
+ }
+}
+if(!found)
+cout<<"The Record with the given usn does not exist "<<endl;
+is.close();
+}
+void main()
+{
+int choice = 1;
+clrscr();
+Person ob;
+//istream& flush();
+//ostream& flush();
+//char filename[] = "p.txt";
+while(choice < 4)
+{
+cout<<"1> Insert A Record "<<endl;
+ cout<<"2> Search For A Record "<<endl;
+ cout<<"3> Modify A Record "<<endl;
+ cout<<"4> Exit "<<endl;
+cin>> choice;
+switch(choice)
+{
+case 1: ob.input();
+ob.pack();
+ob.Write();
+break;
+case 2: ob.search();
+break;
+case 3: ob.modify();
+break;
+}
+} getch();
+}
